@@ -4,14 +4,21 @@ struct Fecha {
     int mes;
     int anio;
 };
+
+void leerFecha(struct Fecha *f) {
+    scanf("%d %d %d", &f->dia, &f->mes, &f->anio);
+}
+
+int calcularDias(struct Fecha f1, struct Fecha f2) {
+    int dias = (f2.anio - f1.anio) * 365 + (f2.mes - f1.mes) * 30 + (f2.dia - f1.dia);
+    return dias;
+}
 int main() {
     struct Fecha primerFecha, segundaFecha;
-    int dias;
     printf("Ingrese la primera fecha (día mes año):");
-    scanf("%d %d %d", &primerFecha.dia, &primerFecha.mes, &primerFecha.anio);
+    leerFecha(&primerFecha);
     printf("Ingrese la segunda fecha (día mes año):");
-    scanf("%d %d %d", &segundaFecha.dia, &segundaFecha.mes, &segundaFecha.anio);
-    dias = (segundaFecha.anio-primerFecha.anio)*365 +(segundaFecha.mes-primerFecha.mes)*30+(segundaFecha.dia-primerFecha.dia);
-    printf("El número de días que hay entre las dos fechas es: %d\n", dias);
+    leerFecha(&segundaFecha);
+    printf("El número de días que hay entre las dos fechas es:%d\n", calcularDias(primerFecha, segundaFecha));
     return 0;
 }
