@@ -55,28 +55,31 @@ void listarTodos(Cliente *p, int n) {
     }
 }
 void listarMorosos(Cliente *p, int n) {
-    int found = 0;
+    int encontrado = 0;
     for (int i = 0; i < n; i++) {
         if (p[i].estado == moroso) {
             mostrarCliente(&p[i], i);
-            found = 1;
+            encontrado = 1;
         }
     }
-    if (!found) {
+    if (!encontrado) {
         printf("\nNo hay clientes en estado moroso.\n");
     }
 }
 
 void listarPagadosMayor(Cliente *p, int n, float minimo) {
-    int found = 0;
+    int encontrado = 0;
     for (int i = 0; i < n; i++) {
         if (p[i].estado == pagado) {
             float factura = p[i].precio * p[i].uniSolicitadas;
             if (factura > minimo) {
                 mostrarCliente(&p[i], i);
-                found = 1;
+                encontrado = 1;
             }
         }
+    }
+    if (!encontrado) {
+        printf("\nNo hay clientes pagados con factura mayor a %.2f\n", minimo);
     }
 }
 
