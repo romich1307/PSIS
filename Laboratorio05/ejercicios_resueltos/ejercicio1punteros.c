@@ -1,4 +1,5 @@
 #include <stdio.h>
+
 struct persona
 {
     char nombre[15];
@@ -7,31 +8,45 @@ struct persona
     char sexo[15];
     int telefono;
 };
+
 int main()
 {
     struct persona amigo[5];
+
     for (int i = 0; i < 5; i++)
     {
+        struct persona *p = &amigo[i];  
+
         printf("Escriba el Nombre %d: ", i + 1);
-        scanf("%s", amigo[i].nombre);
+        scanf("%14s", p->nombre);
+
         printf("Escriba el Apellido %d: ", i + 1);
-        scanf("%s", amigo[i].apellido);
+        scanf("%14s", p->apellido);
+
         printf("Escriba la Edad de %d: ", i + 1);
-        scanf("%d", &amigo[i].edad);
+        scanf("%d", &p->edad);
+
         printf("Escriba el sexo %d: ", i + 1);
-        scanf("%s", amigo[i].sexo);
+        scanf("%14s", p->sexo);
+
         printf("Escriba el Telefono de %d: ", i + 1);
-        scanf("%d", &amigo[i].telefono);
+        scanf("%d", &p->telefono);
+
         printf("\n");
     }
+
     printf("El registro de personas que se introdujeron es:\n\n");
+
     for (int i = 0; i < 5; i++)
     {
-        printf("%s\t", amigo[i].nombre);
-        printf("%s\t", amigo[i].apellido);
-        printf("%d\t", amigo[i].edad);
-        printf("%s\t", amigo[i].sexo);
-        printf("%d\n\n", amigo[i].telefono);
+        struct persona *p = &amigo[i];  
+
+        printf("%s\t", p->nombre);
+        printf("%s\t", p->apellido);
+        printf("%d\t", p->edad);
+        printf("%s\t", p->sexo);
+        printf("%d\n\n", p->telefono);
     }
+
     return 0;
 }

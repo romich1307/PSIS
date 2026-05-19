@@ -55,7 +55,7 @@ int main() {
     int filas, columnas;
     int filaPunto, columnaPunto;
 
-    printf("Ingrese numero de filas: ");
+    printf("Ingrese numero de filas: ");                                        
     scanf("%d", &filas);
 
     printf("Ingrese numero de columnas: ");

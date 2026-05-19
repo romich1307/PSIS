@@ -1,17 +1,13 @@
 #include <stdio.h>
-
 double AreaCuadrilatero(double ladoA, double ladoB);
 double AreaTriangulo(double base, double altura);
 double AreaCirculo(double radio);
-
 int main() {
     double a, b, area;
     int figura;
-
     printf("Que figura quiere analizar?\n");
-    printf("Cuadrado=1, Rectangulo=2, Triangulo=3, Circulo=4\n");
+    printf("Cuadrado=1, Rectangulo=2, Triangulo=3, Circulo=4\n");+
     scanf("%d", &figura);
-
     switch (figura) {
         case 1:
             printf("Introduzca el valor del lado: ");
@@ -24,7 +20,6 @@ int main() {
                 printf("El area del cuadrado es: %.2f\n", area);
             }
             break;
-
         case 2:
             printf("Introduzca el valor del lado a y lado b: ");
             scanf("%lf %lf", &a, &b);
@@ -36,7 +31,6 @@ int main() {
                 printf("El area del rectangulo es: %.2f\n", area);
             }
             break;
-
         case 3:
             printf("Introduzca la base y la altura: ");
             scanf("%lf %lf", &a, &b);
@@ -48,7 +42,6 @@ int main() {
                 printf("El area del triangulo es: %.2f\n", area);
             }
             break;
-        
         case 4:
             printf("Introduzca el valor del radio: ");
             scanf("%lf", &a);
@@ -67,7 +60,6 @@ int main() {
     }
     return 0;
 }
-
 double AreaCuadrilatero(double ladoA, double ladoB) {
     return ladoA* ladoB;
 }

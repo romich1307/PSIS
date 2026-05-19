@@ -107,7 +107,7 @@ int main() {
     imprimirMatriz(B, filasB, columnasB);
 
     printf("\nResultado A x B:\n");
-    imprimirMatriz(C, filasA, columnasB);
+    imprimirMatriz(C, filasA, columnasB);n
 
     liberarMatriz(A, filasA);
     liberarMatriz(B, filasB);
