@@ -61,4 +61,6 @@ int main () {
             printf("\nEstado: Pagado");
         }
     }
+
+    free(p);
 }
