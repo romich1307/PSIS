@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
-#define HASH_SIZE 20000
-#define CAPACIDAD_CACHE 1000
+#define HASH_SIZE 12
+#define CAPACIDAD_CACHE 4
 
 typedef struct Node {
     int key;
@@ -13,12 +14,22 @@ typedef struct Node {
 } Node;
 
 typedef struct {
+    char titulo[100];
+    char artista[100];
+    int duracion;
+} Cancion;
+
+typedef struct {
     int capacity;
     int size;
     Node *head;
     Node *tail;
     Node *hashTable[HASH_SIZE];
 } LRUCache;
+
+/* Biblioteca de canciones */
+Cancion biblioteca[HASH_SIZE];
+int cancionRegistrada[HASH_SIZE];
 
 Node *crearNodo(int clave, int valor) {
     Node *nuevoNodo = (Node *)malloc(sizeof(Node));
@@ -44,6 +55,7 @@ void inicializarCache(LRUCache *cache, int capacidad) {
 
     for (int posicion = 0; posicion < HASH_SIZE; posicion++) {
         cache->hashTable[posicion] = NULL;
+        cancionRegistrada[posicion] = 0;
     }
 }
 
@@ -74,6 +86,9 @@ void quitarNodo(LRUCache *cache, Node *nodo) {
     } else {
         cache->tail = nodo->prev;
     }
+
+    nodo->prev = NULL;
+    nodo->next = NULL;
 }
 
 void moverAlInicio(LRUCache *cache, Node *nodo) {
@@ -109,8 +124,12 @@ void insertarValor(LRUCache *cache, int clave, int valor) {
 
     if (cache->size == cache->capacity) {
         Node *nodoMenosReciente = cache->tail;
+        int codigoEliminado = nodoMenosReciente->key;
 
-        cache->hashTable[nodoMenosReciente->key] = NULL;
+        printf("\nCache llena: Eliminando '%s' por ser la menos escuchada recientemente.\n",
+               biblioteca[codigoEliminado].titulo);
+
+        cache->hashTable[codigoEliminado] = NULL;
         quitarNodo(cache, nodoMenosReciente);
         free(nodoMenosReciente);
 
@@ -130,55 +149,204 @@ void liberarCache(LRUCache *cache) {
         free(nodoActual);
         nodoActual = nodoSiguiente;
     }
+
+    cache->head = NULL;
+    cache->tail = NULL;
+    cache->size = 0;
 }
 
-void ejecutarPrueba(int cantidadOperaciones) {
-    LRUCache cache;
-    inicializarCache(&cache, CAPACIDAD_CACHE);
+void limpiarBuffer() {
+    int caracter;
 
-    int aciertos = 0;
-    int fallos = 0;
+    while ((caracter = getchar()) != '\n' && caracter != EOF) {
+    }
+}
 
-    clock_t inicio = clock();
+void leerTexto(char texto[], int tamano) {
+    fgets(texto, tamano, stdin);
+    texto[strcspn(texto, "\n")] = '\0';
+}
 
-    for (int operacion = 0; operacion < cantidadOperaciones; operacion++) {
-        int tipoOperacion = rand() % 2;
-        int claveAleatoria = rand() % HASH_SIZE;
-        int valorAleatorio = rand() % 100000;
-
-        if (tipoOperacion == 0) {
-            int resultado = obtenerValor(&cache, claveAleatoria);
-
-            if (resultado != -1) {
-                aciertos++;
-            } else {
-                fallos++;
-            }
-        } else {
-            insertarValor(&cache, claveAleatoria, valorAleatorio);
+int buscarCodigoPorTitulo(char tituloBuscado[]) {
+    for (int codigo = 0; codigo < HASH_SIZE; codigo++) {
+        if (cancionRegistrada[codigo] == 1 &&
+            strcmp(biblioteca[codigo].titulo, tituloBuscado) == 0) {
+            return codigo;
         }
     }
 
-    clock_t fin = clock();
+    return -1;
+}
 
-    double tiempoEjecucion = (double)(fin - inicio) / CLOCKS_PER_SEC;
+void agregarCancion() {
+    int codigo;
+    char titulo[100];
+    char artista[100];
+    int duracion;
 
-    printf("Operaciones realizadas: %d\n", cantidadOperaciones);
-    printf("Capacidad del cache: %d\n", CAPACIDAD_CACHE);
-    printf("Aciertos: %d\n", aciertos);
-    printf("Fallos: %d\n", fallos);
-    printf("Tiempo de ejecucion: %.6f segundos\n", tiempoEjecucion);
-    printf("-------------------------------------\n");
+    printf("\nIngrese el codigo de la cancion (0 - %d): ", HASH_SIZE - 1);
+    scanf("%d", &codigo);
+    limpiarBuffer();
 
-    liberarCache(&cache);
+    if (codigo < 0 || codigo >= HASH_SIZE) {
+        printf("Codigo invalido.\n");
+        return;
+    }
+
+    if (cancionRegistrada[codigo] == 1) {
+        printf("Ese codigo ya tiene una cancion registrada.\n");
+        return;
+    }
+
+    printf("Ingrese el titulo de la cancion: ");
+    leerTexto(titulo, 100);
+
+    if (buscarCodigoPorTitulo(titulo) != -1) {
+        printf("Ya existe una cancion con ese titulo.\n");
+        return;
+    }
+
+    printf("Ingrese el artista: ");
+    leerTexto(artista, 100);
+
+    printf("Ingrese la duracion en segundos: ");
+    scanf("%d", &duracion);
+    limpiarBuffer();
+
+    strcpy(biblioteca[codigo].titulo, titulo);
+    strcpy(biblioteca[codigo].artista, artista);
+    biblioteca[codigo].duracion = duracion;
+    cancionRegistrada[codigo] = 1;
+
+    printf("\nCancion agregada correctamente.\n");
+}
+
+void buscarCancion() {
+    char tituloBuscado[100];
+
+    printf("\nIngrese el titulo de la cancion a buscar: ");
+    leerTexto(tituloBuscado, 100);
+
+    int codigo = buscarCodigoPorTitulo(tituloBuscado);
+
+    if (codigo == -1) {
+        printf("Cancion no encontrada.\n");
+        return;
+    }
+
+    printf("\nCancion encontrada:\n");
+    printf("Codigo: %d\n", codigo);
+    printf("Titulo: %s\n", biblioteca[codigo].titulo);
+    printf("Artista: %s\n", biblioteca[codigo].artista);
+    printf("Duracion: %d segundos\n", biblioteca[codigo].duracion);
+}
+
+void reproducirCancion(LRUCache *cache) {
+    char tituloBuscado[100];
+
+    printf("\nIngrese el titulo de la cancion a reproducir: ");
+    leerTexto(tituloBuscado, 100);
+
+    int codigo = buscarCodigoPorTitulo(tituloBuscado);
+
+    if (codigo == -1) {
+        printf("La cancion no existe. Primero debe agregarla.\n");
+        return;
+    }
+
+    int reproduccionesActuales = obtenerValor(cache, codigo);
+
+    if (reproduccionesActuales == -1) {
+        insertarValor(cache, codigo, 1);
+
+        printf("\nReproduciendo nueva cancion: %s - %s\n",
+               biblioteca[codigo].titulo,
+               biblioteca[codigo].artista);
+    } else {
+        insertarValor(cache, codigo, reproduccionesActuales + 1);
+
+        printf("\nReproduciendo nuevamente: %s - %s\n",
+               biblioteca[codigo].titulo,
+               biblioteca[codigo].artista);
+
+        printf("Reproducciones en cache: %d\n", reproduccionesActuales + 1);
+    }
+}
+
+void mostrarCancionesRecientes(LRUCache *cache) {
+    Node *nodoActual = cache->head;
+
+    if (nodoActual == NULL) {
+        printf("\nNo hay canciones recientes.\n");
+        return;
+    }
+
+    printf("\nCanciones recientes:\n");
+    printf("Mas reciente -> Menos reciente\n\n");
+
+    while (nodoActual != NULL) {
+        int codigo = nodoActual->key;
+
+        printf("Titulo: %s | Artista: %s | Duracion: %d s | Reproducciones: %d\n",
+               biblioteca[codigo].titulo,
+               biblioteca[codigo].artista,
+               biblioteca[codigo].duracion,
+               nodoActual->value);
+
+        nodoActual = nodoActual->next;
+    }
+}
+
+void mostrarMenu() {
+    printf("\n========== MENU SPOTIFY LRU ==========\n");
+    printf("1. Agregar cancion\n");
+    printf("2. Buscar cancion\n");
+    printf("3. Reproducir cancion\n");
+    printf("4. Mostrar canciones recientes\n");
+    printf("5. Salir\n");
+    printf("Seleccione una opcion: ");
 }
 
 int main() {
-    srand(time(NULL));
+    LRUCache cacheSpotify;
+    int opcion;
 
-    ejecutarPrueba(10000);
-    ejecutarPrueba(50000);
-    ejecutarPrueba(100000);
+    inicializarCache(&cacheSpotify, CAPACIDAD_CACHE);
+
+    do {
+        mostrarMenu();
+        scanf("%d", &opcion);
+        limpiarBuffer();
+
+        switch (opcion) {
+            case 1:
+                agregarCancion();
+                break;
+
+            case 2:
+                buscarCancion();
+                break;
+
+            case 3:
+                reproducirCancion(&cacheSpotify);
+                break;
+
+            case 4:
+                mostrarCancionesRecientes(&cacheSpotify);
+                break;
+
+            case 5:
+                printf("\nSaliendo del programa\n");
+                break;
+
+            default:
+                printf("\nOpcion invalida.intente nuevamente.\n");
+                break;
+        }
+
+    } while (opcion != 5);
+
+    liberarCache(&cacheSpotify);
 
     return 0;
-} 
+}
