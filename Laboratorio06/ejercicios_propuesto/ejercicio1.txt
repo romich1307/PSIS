@@ -1,0 +1,3 @@
+Nombre: Romina
+Edad: 19
+Carrera: Ingenieria de sistemas
