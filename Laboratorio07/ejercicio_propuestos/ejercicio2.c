@@ -2,8 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define HASH_SIZE 20000
-#define CAPACIDAD_CACHE 1000
+#define HASH_SIZE 12
 
 typedef struct Node {
     int key;
@@ -11,6 +10,12 @@ typedef struct Node {
     struct Node *prev;
     struct Node *next;
 } Node;
+
+typedef struct {
+    char titulo[100];
+    char artista[100];
+    int duracion;
+} Cancion;
 
 typedef struct {
     int capacity;
@@ -132,53 +137,8 @@ void liberarCache(LRUCache *cache) {
     }
 }
 
-void ejecutarPrueba(int cantidadOperaciones) {
-    LRUCache cache;
-    inicializarCache(&cache, CAPACIDAD_CACHE);
-
-    int aciertos = 0;
-    int fallos = 0;
-
-    clock_t inicio = clock();
-
-    for (int operacion = 0; operacion < cantidadOperaciones; operacion++) {
-        int tipoOperacion = rand() % 2;
-        int claveAleatoria = rand() % HASH_SIZE;
-        int valorAleatorio = rand() % 100000;
-
-        if (tipoOperacion == 0) {
-            int resultado = obtenerValor(&cache, claveAleatoria);
-
-            if (resultado != -1) {
-                aciertos++;
-            } else {
-                fallos++;
-            }
-        } else {
-            insertarValor(&cache, claveAleatoria, valorAleatorio);
-        }
-    }
-
-    clock_t fin = clock();
-
-    double tiempoEjecucion = (double)(fin - inicio) / CLOCKS_PER_SEC;
-
-    printf("Operaciones realizadas: %d\n", cantidadOperaciones);
-    printf("Capacidad del cache: %d\n", CAPACIDAD_CACHE);
-    printf("Aciertos: %d\n", aciertos);
-    printf("Fallos: %d\n", fallos);
-    printf("Tiempo de ejecucion: %.6f segundos\n", tiempoEjecucion);
-    printf("-------------------------------------\n");
-
-    liberarCache(&cache);
-}
-
 int main() {
-    srand(time(NULL));
-
-    ejecutarPrueba(10000);
-    ejecutarPrueba(50000);
-    ejecutarPrueba(100000);
+    // Code
 
     return 0;
 } 
